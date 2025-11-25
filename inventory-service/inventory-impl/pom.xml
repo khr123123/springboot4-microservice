@@ -14,6 +14,10 @@
     </properties>
 
     <dependencies>
-
+        <dependency>
+            <groupId>org.khr.microservice</groupId>
+            <artifactId>inventory-api</artifactId>
+            <version>0.0.1</version>
+        </dependency>
     </dependencies>
 </project>

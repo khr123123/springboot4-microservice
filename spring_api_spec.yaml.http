@@ -1,0 +1,39 @@
+### 1. 创建库存
+POST http://localhost:8083/api/inventory
+Content-Type: application/json
+
+{
+  "productId": 1,
+  "productName": "ノートパソコン",
+  "quantity": 100
+}
+
+
+### 2. 创建用户
+POST http://localhost:8081/api/users
+Content-Type: application/json
+
+{
+  "username": "山田太郎",
+  "email": "yamada@example.com"
+}
+
+
+### 3. 创建订单（会自动检查和扣减库存）
+POST http://localhost:8082/api/orders
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "productId": 1,
+  "quantity": 2,
+  "price": 150000.00
+}
+
+
+### 4. 查询所有订单
+GET http://localhost:8082/api/orders
+
+
+### 5. 查询库存
+GET http://localhost:8083/api/inventory
