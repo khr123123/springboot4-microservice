@@ -1,7 +1,9 @@
 package org.khr.microservice.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.khr.microservice.model.Inventory;
 import org.khr.microservice.service.InventoryService;
 import org.springframework.http.HttpStatus;
@@ -14,6 +16,7 @@ import java.util.List;
  * 在庫コントローラー
  * Spring Boot 4の新機能を活用
  */
+@Slf4j
 @RestController
 @RequestMapping("/api/inventory")
 @RequiredArgsConstructor
@@ -41,7 +44,10 @@ public class InventoryController {
     }
 
     @PostMapping
-    public ResponseEntity<Inventory> createInventory(@Valid @RequestBody Inventory inventory) {
+    public ResponseEntity<Inventory> createInventory(@Valid @RequestBody Inventory inventory,
+        HttpServletRequest httpServletRequest) {
+        String authorization = httpServletRequest.getHeader("Authorization");
+        log.info("Authorization: {}", authorization);
         Inventory createdInventory = inventoryService.createInventory(inventory);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdInventory);
     }
@@ -77,7 +83,9 @@ public class InventoryController {
     @PutMapping("/reduce/{productId}/{quantity}")
     public ResponseEntity<Void> reduceInventory(
         @PathVariable Long productId,
-        @PathVariable Integer quantity) {
+        @PathVariable Integer quantity, HttpServletRequest httpServletRequest) {
+        String authorization = httpServletRequest.getHeader("Authorization");
+        log.info("Authorization: {}", authorization);
         inventoryService.reduceInventory(productId, quantity);
         return ResponseEntity.ok().build();
     }

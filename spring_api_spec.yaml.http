@@ -20,8 +20,9 @@ Content-Type: application/json
 
 
 ### 3. 创建订单（会自动检查和扣减库存）
-POST http://localhost:8082/api/orders
+POST http://localhost:8080/orders/api/orders
 Content-Type: application/json
+Authorization: Bearer FUCK U
 
 {
   "userId": 1,
@@ -31,9 +32,11 @@ Content-Type: application/json
 }
 
 
+
 ### 4. 查询所有订单
 GET http://localhost:8082/api/orders
-
+Authorization: Bearer FUCK U
 
 ### 5. 查询库存
 GET http://localhost:8083/api/inventory
+Authorization: Bearer FUCK U

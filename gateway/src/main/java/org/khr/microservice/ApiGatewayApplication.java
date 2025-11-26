@@ -2,12 +2,10 @@ package org.khr.microservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.service.registry.ImportHttpServices;
 
 @SpringBootApplication
-public class InventoryServiceApplication {
-
+public class ApiGatewayApplication {
     public static void main(String[] args) {
-        SpringApplication.run(InventoryServiceApplication.class, args);
+        SpringApplication.run(ApiGatewayApplication.class, args);
     }
 }

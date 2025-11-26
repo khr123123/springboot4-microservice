@@ -44,8 +44,7 @@ public class InventoryService {
         if (inventoryRepository.existsByProductId(inventory.getProductId())) {
             throw new IllegalArgumentException("商品IDが既に存在します: " + inventory.getProductId());
         }
-        log.info("新規在庫を作成: ProductID={}, Quantity={}",
-            inventory.getProductId(), inventory.getQuantity());
+        log.info("新規在庫を作成: ProductID={}, Quantity={}", inventory.getProductId(), inventory.getQuantity());
         return inventoryRepository.save(inventory);
     }
 
@@ -85,8 +84,8 @@ public class InventoryService {
         Inventory inventory = inventoryOpt.get();
         boolean hasStock = inventory.hasEnoughStock(quantity);
 
-        log.info("在庫チェック: ProductID={}, RequestedQty={}, AvailableQty={}, Result={}",
-            productId, quantity, inventory.getAvailableQuantity(), hasStock);
+        log.info("在庫チェック: ProductID={}, RequestedQty={}, AvailableQty={}, Result={}", productId, quantity,
+            inventory.getAvailableQuantity(), hasStock);
 
         return hasStock;
     }
@@ -106,8 +105,8 @@ public class InventoryService {
         inventory.setQuantity(inventory.getQuantity() - quantity);
         inventoryRepository.save(inventory);
 
-        log.info("在庫を減らしました: ProductID={}, ReducedQty={}, RemainingQty={}",
-            productId, quantity, inventory.getQuantity());
+        log.info("在庫を減らしました: ProductID={}, ReducedQty={}, RemainingQty={}", productId, quantity,
+            inventory.getQuantity());
     }
 
     /**
@@ -121,7 +120,7 @@ public class InventoryService {
         inventory.setQuantity(inventory.getQuantity() + quantity);
         inventoryRepository.save(inventory);
 
-        log.info("在庫を増やしました: ProductID={}, IncreasedQty={}, CurrentQty={}",
-            productId, quantity, inventory.getQuantity());
+        log.info("在庫を増やしました: ProductID={}, IncreasedQty={}, CurrentQty={}", productId, quantity,
+            inventory.getQuantity());
     }
 }
