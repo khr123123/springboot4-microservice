@@ -1,8 +1,6 @@
 package org.khr.microservice;
 
-import cn.hutool.core.util.ByteUtil;
 import cn.hutool.json.JSONUtil;
-import cn.hutool.json.ObjectMapper;
 import cn.hutool.jwt.JWT;
 import cn.hutool.jwt.JWTUtil;
 import cn.hutool.jwt.JWTValidator;
@@ -25,6 +23,8 @@ import java.util.Set;
 
 @Component
 public class TokenGlobalFilter implements GlobalFilter, Ordered {
+
+    private static final String TOKEN_SECRET = "your_secret_key";
 
     /**
      * 白名单从 yml 注入
@@ -63,7 +63,7 @@ public class TokenGlobalFilter implements GlobalFilter, Ordered {
             JWT jwt = JWTUtil.parseToken(rawToken);
 
             // ④ 验签
-            boolean verify = jwt.setKey("your_secret_key".getBytes()).verify();
+            boolean verify = jwt.setKey(TOKEN_SECRET.getBytes()).verify();
             if (!verify) {
                 return writeUnauthorized(exchange, "Invalid Token Signature");
             }
@@ -78,7 +78,6 @@ public class TokenGlobalFilter implements GlobalFilter, Ordered {
             ServerHttpRequest newRequest = exchange.getRequest().mutate()
                 .header("Authorization", token)
                 .header("X-UserId", userId)
-                .header("FUCK", "caonimadebi")
                 .build();
 
             return chain.filter(exchange.mutate().request(newRequest).build());

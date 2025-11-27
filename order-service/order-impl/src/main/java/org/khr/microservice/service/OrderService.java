@@ -2,8 +2,9 @@ package org.khr.microservice.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.khr.microservice.inventory.api.InventoryService;
 import org.khr.microservice.common.context.UserContext;
+import org.khr.microservice.config.RedisLock;
+import org.khr.microservice.inventory.api.InventoryService;
 import org.khr.microservice.model.Order;
 import org.khr.microservice.repository.OrderRepository;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,7 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final InventoryService inventoryService;
+    private final RedisLock redisLock;
 
     @Transactional(readOnly = true)
     public List<Order> getAllOrders() {
@@ -50,21 +52,39 @@ public class OrderService {
         order.setUserId(userId);
         log.info("inventoryService示例 {}", inventoryService.hashCode());
         // 在庫サービスをチェック（Spring WebClientを使用）
-        boolean inventoryAvailable = inventoryService.checkInventory(order.getProductId(), order.getQuantity());
+        // RedisLock 注入
+        String lockKey = "product_lock_" + order.getProductId();
+        String lockValue = null;
+        while (lockValue == null) {
+            lockValue = redisLock.tryLock(lockKey, 10); // 10 秒锁过期
+            if (lockValue == null) {
+                try {
+                    Thread.sleep(90); // 等 50ms 再重试，避免 CPU 空转
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException("线程被中断", e);
+                }
+            }
+        }
+        try {
+            boolean inventoryAvailable = inventoryService.checkInventory(order.getProductId(), order.getQuantity());
 
-        if (!inventoryAvailable) {
-            throw new IllegalStateException("在庫が不足しています");
+            if (!inventoryAvailable) {
+                throw new IllegalStateException("在庫が不足しています");
+            }
+
+            order.setStatus(Order.OrderStatus.PENDING);
+            log.info("新規注文を作成: ProductID={}, Quantity={}", order.getProductId(), order.getQuantity());
+
+            Order savedOrder = orderRepository.save(order);
+            // 在庫を減らす
+            inventoryService.reduceInventory(order.getProductId(), order.getQuantity());
+            return savedOrder;
+        } finally {
+            // 解锁
+            redisLock.unlock(lockKey, lockValue);
         }
 
-        order.setStatus(Order.OrderStatus.PENDING);
-        log.info("新規注文を作成: ProductID={}, Quantity={}", order.getProductId(), order.getQuantity());
-
-        Order savedOrder = orderRepository.save(order);
-
-        // 在庫を減らす
-        inventoryService.reduceInventory(order.getProductId(), order.getQuantity());
-
-        return savedOrder;
     }
 
     @Transactional

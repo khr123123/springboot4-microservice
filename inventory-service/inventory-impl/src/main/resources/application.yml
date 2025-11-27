@@ -12,11 +12,13 @@ spring:
     username: root
     password: admin123
     driver-class-name: com.mysql.cj.jdbc.Driver
-
+  threads:
+    virtual:
+      enabled: true
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -34,5 +36,9 @@ management:
 
 logging:
   level:
-    com.example.inventory: DEBUG
-    org.springframework.web: INFO
+    root: ERROR
+    org.springframework: ERROR
+    org.hibernate: ERROR
+    org.springframework.web: ERROR
+    org.springframework.cloud: ERROR
+

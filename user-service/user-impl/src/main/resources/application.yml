@@ -12,7 +12,10 @@ spring:
     username: root
     password: admin123
     driver-class-name: com.mysql.cj.jdbc.Driver
-  
+
+  threads:
+    virtual:
+      enabled: true
   jpa:
     hibernate:
       ddl-auto: update

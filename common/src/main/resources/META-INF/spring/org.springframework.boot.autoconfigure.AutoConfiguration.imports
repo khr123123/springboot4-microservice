@@ -1,2 +1,3 @@
 org.khr.microservice.common.config.RestClientConfig
 org.khr.microservice.common.intercetor.UserContextInterceptor
+org.khr.microservice.common.config.UserContextFilter
