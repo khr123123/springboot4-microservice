@@ -1,9 +1,13 @@
 package org.khr.microservice.service;
 
+import cn.hutool.jwt.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.khr.microservice.User;
+import org.khr.microservice.model.User;
+import org.khr.microservice.constant.TokenConstant;
+import org.khr.microservice.model.UserModel;
 import org.khr.microservice.repository.UserRepository;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +24,43 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
+    public User register(User user) {
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new IllegalArgumentException("メールアドレスが既に使用されています: " + user.getEmail());
+        }
+        // パスワードをハッシュ化
+        String encoded = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encoded);
+
+        log.info("新規ユーザー登録: email={}", user.getEmail());
+
+        return userRepository.save(user);
+    }
+
+    public UserModel.UserVO login(String email, String rawPassword) {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new IllegalArgumentException("メールアドレスが存在しません: " + email));
+        // パスワード照合
+        if (!passwordEncoder.matches(rawPassword, user.getPassword())) {
+            throw new IllegalArgumentException("パスワードが正しくありません");
+        }
+        // 3. 生成 JWT token
+        String token = JWTUtil.createToken(
+            java.util.Map.of("userId", user.getId()),
+            TokenConstant.TOKEN_SECRET.getBytes()
+        );
+        log.info("ログイン成功: email={}", email);
+
+        // 4. 返回 UserVO
+        return new UserModel.UserVO(
+            user.getId(),
+            user.getUsername(),
+            user.getEmail(),
+            token
+        );
+    }
 
     @Transactional(readOnly = true)
     public List<User> getAllUsers() {

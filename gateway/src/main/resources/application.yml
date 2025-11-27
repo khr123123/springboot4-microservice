@@ -16,7 +16,14 @@ spring:
         - id: inventory-service
           uri: lb://inventory-service
           predicates:
-            - Path=/inventory-service/**
+            - Path=/inventorys/**
+          filters:
+            - StripPrefix=1
+
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/users/**
           filters:
             - StripPrefix=1
 
@@ -26,6 +33,12 @@ spring:
       discovery:
         enabled: true
         service-name: api-gateway
+
+gateway:
+  white-list:
+    - /auth/login
+    - /auth/register
+
 management:
   endpoints:
     web:

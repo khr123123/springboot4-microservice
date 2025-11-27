@@ -1,6 +1,6 @@
 package org.khr.microservice.repository;
 
-import org.khr.microservice.User;
+import org.khr.microservice.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

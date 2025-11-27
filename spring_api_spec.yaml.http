@@ -8,6 +8,25 @@ Content-Type: application/json
   "quantity": 100
 }
 
+### 2. 注册用户
+POST http://localhost:8080/users/api/users/register
+Content-Type: application/json
+
+{
+  "username": "山田太郎",
+  "email": "yamada@example.com",
+  "password": "123456"
+}
+
+### 2. login
+POST http://localhost:8080/users/api/users/login
+Content-Type: application/json
+
+{
+  "email": "yamada@example.com",
+  "password": "123456"
+}
+
 
 ### 2. 创建用户
 POST http://localhost:8081/api/users
@@ -22,10 +41,9 @@ Content-Type: application/json
 ### 3. 创建订单（会自动检查和扣减库存）
 POST http://localhost:8080/orders/api/orders
 Content-Type: application/json
-Authorization: Bearer FUCK U
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEyM30.vFes7rOq9XoEZYfYk53FtAVw2e9jPlO_Onqyaa8AuCA
 
 {
-  "userId": 1,
   "productId": 1,
   "quantity": 2,
   "price": 150000.00

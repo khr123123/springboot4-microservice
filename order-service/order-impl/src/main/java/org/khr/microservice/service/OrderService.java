@@ -3,6 +3,7 @@ package org.khr.microservice.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.khr.microservice.api.InventoryService;
+import org.khr.microservice.context.UserContext;
 import org.khr.microservice.model.Order;
 import org.khr.microservice.repository.OrderRepository;
 import org.springframework.stereotype.Service;
@@ -43,8 +44,10 @@ public class OrderService {
 
     @Transactional
     public Order createOrder(Order order) {
-        log.info("新規注文を作成: UserID={}, ProductID={}, Quantity={}", order.getUserId(), order.getProductId(),
+        Long userId = Long.valueOf(UserContext.getUser());
+        log.info("新規注文を作成: UserID={}, ProductID={}, Quantity={}", userId, order.getProductId(),
             order.getQuantity());
+        order.setUserId(userId);
         log.info("inventoryService示例 {}", inventoryService.hashCode());
         // 在庫サービスをチェック（Spring WebClientを使用）
         boolean inventoryAvailable = inventoryService.checkInventory(order.getProductId(), order.getQuantity());
