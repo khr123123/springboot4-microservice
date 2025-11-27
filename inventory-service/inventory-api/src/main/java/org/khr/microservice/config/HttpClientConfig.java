@@ -1,7 +1,7 @@
 package org.khr.microservice.config;
 
 import org.khr.microservice.api.InventoryService;
-import org.khr.microservice.context.UserContext;
+import org.khr.microservice.common.context.UserContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestClient;
@@ -22,7 +22,7 @@ public class HttpClientConfig {
                 // 从 ThreadLocal 获取 token 并添加到请求头
                 String token = UserContext.getUser();
                 if (token != null && !token.isBlank()) {
-                    request.getHeaders().set("Authorization",token);
+                    request.getHeaders().set("Authorization", token);
                 }
                 request.getHeaders().set("X-Caller-Service", "order-service");
                 return execution.execute(request, body);

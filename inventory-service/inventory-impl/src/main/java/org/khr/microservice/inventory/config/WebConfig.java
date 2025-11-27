@@ -1,6 +1,6 @@
-package org.khr.microservice.config;
+package org.khr.microservice.inventory.config;
 
-import org.khr.microservice.intercetor.UserContextInterceptor;
+import org.khr.microservice.common.intercetor.UserContextInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

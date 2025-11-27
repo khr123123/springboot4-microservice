@@ -1,4 +1,4 @@
-package org.khr.microservice.repository;
+package org.khr.microservice.inventory.repository;
 
 import org.khr.microservice.model.Inventory;
 import org.springframework.data.jpa.repository.JpaRepository;

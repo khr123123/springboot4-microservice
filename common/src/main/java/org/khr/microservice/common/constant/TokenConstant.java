@@ -1,4 +1,4 @@
-package org.khr.microservice.constant;
+package org.khr.microservice.common.constant;
 
 /**
  @author KK

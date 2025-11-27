@@ -1,8 +1,7 @@
-package org.khr.microservice;
+package org.khr.microservice.inventory;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.service.registry.ImportHttpServices;
 
 @SpringBootApplication
 public class InventoryServiceApplication {

@@ -1,9 +1,9 @@
-package org.khr.microservice.service;
+package org.khr.microservice.inventory.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.khr.microservice.model.Inventory;
-import org.khr.microservice.repository.InventoryRepository;
+import org.khr.microservice.inventory.repository.InventoryRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

@@ -14,5 +14,10 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>org.khr.microservice</groupId>
+            <artifactId>common</artifactId>
+            <version>0.0.1</version>
+        </dependency>
     </dependencies>
 </project>
