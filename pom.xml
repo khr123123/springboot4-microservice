@@ -28,6 +28,7 @@
         <module>order-service</module>
         <module>inventory-service</module>
         <module>common</module>
+        <module>gateway</module>
     </modules>
     <dependencyManagement>
         <dependencies>
@@ -71,13 +72,16 @@
     <repositories>
         <repository>
             <id>spring-snapshots</id>
-            <name>Spring Snapshots</name>
-            <url>https://repo.spring.io/snapshot</url>
+            <url>https://repo.spring.io/artifactory/snapshot</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
             <releases>
                 <enabled>false</enabled>
             </releases>
         </repository>
     </repositories>
+
     <pluginRepositories>
         <pluginRepository>
             <id>spring-snapshots</id>

@@ -5,39 +5,35 @@ spring:
     name: api-gateway
   cloud:
     gateway:
-      routes:
-        - id: order-service
-          uri: lb://order-service
-          predicates:
-            - Path=/orders/**
-          filters:
-            - StripPrefix=1
+      server:
+        webflux:
+          routes:
+            - id: order-service
+              uri: lb://order-service
+              predicates:
+                - Path=/orders/**
+              filters:
+                - StripPrefix=1
 
-        - id: inventory-service
-          uri: lb://inventory-service
-          predicates:
-            - Path=/inventorys/**
-          filters:
-            - StripPrefix=1
+            - id: inventory-service
+              uri: lb://inventory-service
+              predicates:
+                - Path=/inventorys/**
+              filters:
+                - StripPrefix=1
 
-        - id: user-service
-          uri: lb://user-service
-          predicates:
-            - Path=/users/**
-          filters:
-            - StripPrefix=1
-
+            - id: user-service
+              uri: lb://user-service
+              predicates:
+                - Path=/users/**
+              filters:
+                - StripPrefix=1
     consul:
       host: localhost
       port: 8500
       discovery:
         enabled: true
         service-name: api-gateway
-
-gateway:
-  white-list:
-    - /auth/login
-    - /auth/register
 
 management:
   endpoints:

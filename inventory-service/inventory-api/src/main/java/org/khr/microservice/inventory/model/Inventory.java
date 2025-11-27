@@ -1,4 +1,4 @@
-package org.khr.microservice.model;
+package org.khr.microservice.inventory.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;

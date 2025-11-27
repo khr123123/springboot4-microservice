@@ -2,10 +2,8 @@ package org.khr.microservice;
 
 import jakarta.annotation.Resource;
 import org.junit.jupiter.api.Test;
-import org.khr.microservice.api.InventoryService;
+import org.khr.microservice.inventory.api.InventoryService;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.Map;
 
 /**
  @author KK

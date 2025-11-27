@@ -1,10 +1,11 @@
 package org.khr.microservice;
 
+import cn.hutool.core.util.ByteUtil;
+import cn.hutool.json.JSONUtil;
+import cn.hutool.json.ObjectMapper;
 import cn.hutool.jwt.JWT;
 import cn.hutool.jwt.JWTUtil;
 import cn.hutool.jwt.JWTValidator;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -24,8 +25,6 @@ import java.util.Set;
 
 @Component
 public class TokenGlobalFilter implements GlobalFilter, Ordered {
-
-    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     /**
      * 白名单从 yml 注入
@@ -76,8 +75,11 @@ public class TokenGlobalFilter implements GlobalFilter, Ordered {
             String userId = jwt.getPayload("userId").toString();
 
             // ⑦ 下游注入 userId
-            ServerHttpRequest newRequest = exchange.getRequest().mutate().header("Authorization", token)
-                .header("X-UserId", userId).build();
+            ServerHttpRequest newRequest = exchange.getRequest().mutate()
+                .header("Authorization", token)
+                .header("X-UserId", userId)
+                .header("FUCK", "caonimadebi")
+                .build();
 
             return chain.filter(exchange.mutate().request(newRequest).build());
 
@@ -111,8 +113,8 @@ public class TokenGlobalFilter implements GlobalFilter, Ordered {
         body.put("message", message);
 
         try {
-            byte[] bytes = objectMapper.writeValueAsString(body).getBytes(StandardCharsets.UTF_8);
-
+            String jsonStr = JSONUtil.toJsonStr(body);
+            byte[] bytes = jsonStr.getBytes(StandardCharsets.UTF_8);
             return response.writeWith(Mono.just(response.bufferFactory().wrap(bytes)));
         } catch (Exception e) {
             return response.setComplete();

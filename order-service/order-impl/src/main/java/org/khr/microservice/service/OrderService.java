@@ -2,7 +2,7 @@ package org.khr.microservice.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.khr.microservice.api.InventoryService;
+import org.khr.microservice.inventory.api.InventoryService;
 import org.khr.microservice.common.context.UserContext;
 import org.khr.microservice.model.Order;
 import org.khr.microservice.repository.OrderRepository;

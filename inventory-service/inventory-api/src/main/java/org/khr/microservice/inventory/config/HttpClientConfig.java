@@ -1,7 +1,8 @@
-package org.khr.microservice.config;
+package org.khr.microservice.inventory.config;
 
-import org.khr.microservice.api.InventoryService;
+import org.khr.microservice.common.constant.TokenConstant;
 import org.khr.microservice.common.context.UserContext;
+import org.khr.microservice.inventory.api.InventoryService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestClient;
@@ -20,9 +21,9 @@ public class HttpClientConfig {
             .baseUrl("http://inventory-service/api/inventory")
             .requestInterceptor((request, body, execution) -> {
                 // 从 ThreadLocal 获取 token 并添加到请求头
-                String token = UserContext.getUser();
-                if (token != null && !token.isBlank()) {
-                    request.getHeaders().set("Authorization", token);
+                String userId = UserContext.getUser();
+                if (userId != null && !userId.isBlank()) {
+                    request.getHeaders().set(TokenConstant.X_USERID, userId);
                 }
                 request.getHeaders().set("X-Caller-Service", "order-service");
                 return execution.execute(request, body);

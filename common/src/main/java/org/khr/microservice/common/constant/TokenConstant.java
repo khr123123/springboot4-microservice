@@ -7,5 +7,5 @@ package org.khr.microservice.common.constant;
 public interface TokenConstant {
 
     String TOKEN_SECRET = "your_secret_key";
-    String X_USERID ="X-UserId";
+    String X_USERID = "X-UserId";
 }
