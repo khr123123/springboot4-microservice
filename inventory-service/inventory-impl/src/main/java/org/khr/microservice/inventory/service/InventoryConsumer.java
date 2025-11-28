@@ -1,4 +1,4 @@
-package org.khr.microservice.inventory.consumer;
+package org.khr.microservice.inventory.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.messaging.Message;
 
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
@@ -30,7 +31,7 @@ public class InventoryConsumer {
         return message -> {
             try {
                 // 1. 幂等性检查
-                String messageId = message.getHeaders().getId().toString();
+                String messageId = Objects.requireNonNull(message.getHeaders().getId()).toString();
                 String idempotentKey = "order_event_processed:" + messageId;
 
                 Boolean isFirstTime = redisTemplate.opsForValue()

@@ -51,10 +51,8 @@ public class InventoryService {
     public Inventory updateInventory(Long id, Inventory inventoryDetails) {
         Inventory inventory = inventoryRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("在庫が見つかりません: ID=" + id));
-
         inventory.setProductName(inventoryDetails.getProductName());
         inventory.setQuantity(inventoryDetails.getQuantity());
-
         log.info("在庫を更新: ID={}, Quantity={}", id, inventoryDetails.getQuantity());
         return inventoryRepository.save(inventory);
     }
@@ -76,15 +74,12 @@ public class InventoryService {
         try {
             Inventory inventory = inventoryRepository.findByProductId(productId)
                 .orElseThrow(() -> new IllegalArgumentException("商品が見つかりません: ProductID=" + productId));
-
             // 检查并预扣
             inventory.reserve(quantity);
             inventoryRepository.save(inventory);
-
             log.info("库存预扣成功: ProductID={}, Quantity={}, Available={}",
                 productId, quantity, inventory.getAvailableQuantity());
             return true;
-
         } catch (Exception e) {
             log.error("库存预扣失败: ProductID={}, Quantity={}, Error={}",
                 productId, quantity, e.getMessage());
@@ -99,7 +94,6 @@ public class InventoryService {
     public void confirmInventory(Long productId, Integer quantity) {
         Inventory inventory = inventoryRepository.findByProductId(productId)
             .orElseThrow(() -> new IllegalArgumentException("商品が見つかりません: ProductID=" + productId));
-
         inventory.confirmReserve(quantity);
         inventoryRepository.save(inventory);
 

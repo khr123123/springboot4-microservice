@@ -104,7 +104,6 @@ public class OrderService {
                             event.setEventType("ORDER_CONFIRMED");  // ✅ 确认事件
 
                             streamBridge.send("orderOutput-out-0", event);
-
                         } catch (Exception e) {
                             log.error("确认消息发送失败: OrderID={}", savedOrder.getId(), e);
                             // TODO: 记录到补偿表，定时重试
