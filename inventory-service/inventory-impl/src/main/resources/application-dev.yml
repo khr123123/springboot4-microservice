@@ -1,0 +1,31 @@
+spring:
+  cloud:
+    function:
+      # ✅ 定义函数名称，对应 Consumer Bean 的名称
+      definition: orderInput
+
+    stream:
+      bindings:
+        # 消费者通道
+        orderInput-in-0:
+          destination: order.events
+          content-type: application/json
+          # ✅ 消费者组（确保消息持久化和负载均衡）
+          group: inventory-service
+
+      rabbit:
+        bindings:
+          orderInput-in-0:
+            consumer:
+              # ✅ 自动确认模式（消费成功后自动 ACK）
+              acknowledge-mode: auto
+              # ✅ 每次只拉取 1 条消息
+              prefetch: 1
+              # ✅ 消费失败后重试配置
+              max-attempts: 3
+              # ✅ 重试间隔（毫秒）
+              initial-interval: 1000
+              # ✅ 重试间隔倍数
+              multiplier: 2.0
+              # ✅ 最大重试间隔
+              max-interval: 10000

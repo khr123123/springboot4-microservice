@@ -4,8 +4,27 @@ spring:
   application:
     name: order-service
   cloud:
+    stream:
+      bindings:
+        # 生产者通道
+        orderOutput-out-0:
+          destination: order.events
+          content-type: application/json
+      rabbit:
+        bindings:
+          orderOutput-out-0:
+            producer:
+              # ✅ 开启发送确认
+              publisher-confirm-type: correlated
+              # ✅ 开启路由失败回调
+              publisher-returns: true
+              # ✅ 消息持久化
+              delivery-mode: PERSISTENT
     consul:
       port: 8500
+  rabbitmq:
+    template:
+      mandatory: true      # ✅ 消息路由失败时触发 ReturnCallback
   datasource:
     url: jdbc:mysql://localhost:3306/microservice_db?useSSL=false&serverTimezone=Asia/Tokyo&allowPublicKeyRetrieval=true
     username: root
@@ -28,6 +47,7 @@ spring:
       port: 6379
       password: # 可选
       database: 0
+
 # Spring Boot 4 Actuatorエンドポイント
 management:
   endpoints:

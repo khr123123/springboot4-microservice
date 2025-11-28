@@ -81,13 +81,12 @@ public class InventoryController {
      * 在庫削減API（注文サービスから呼ばれる）
      */
     @PutMapping("/reduce/{productId}/{quantity}")
-    public ResponseEntity<Void> reduceInventory(
+    public ResponseEntity<Boolean> reduceInventory(
         @PathVariable Long productId,
         @PathVariable Integer quantity, HttpServletRequest httpServletRequest) {
         String authorization = httpServletRequest.getHeader("Authorization");
         log.info("Authorization: {}", authorization);
-        inventoryService.reduceInventory(productId, quantity);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(inventoryService.reserveInventory(productId, quantity));
     }
 
     /**

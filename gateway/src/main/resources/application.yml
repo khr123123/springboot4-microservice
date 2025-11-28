@@ -46,10 +46,10 @@ management:
   endpoint:
     health:
       show-details: always
-logging:
-  level:
-    root: ERROR
-    org.springframework: ERROR
-    org.hibernate: ERROR
-    org.springframework.web: ERROR
-    org.springframework.cloud: ERROR
+#logging:
+#  level:
+#    root: ERROR
+#    org.springframework: ERROR
+#    org.hibernate: ERROR
+#    org.springframework.web: ERROR
+#    org.springframework.cloud: ERROR

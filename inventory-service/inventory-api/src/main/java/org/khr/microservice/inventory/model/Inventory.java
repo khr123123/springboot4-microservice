@@ -62,16 +62,48 @@ public class Inventory {
     }
 
     /**
-     * 利用可能な在庫数を取得
+     * 可用库存 = 实际库存 - 预扣库存
      */
     public Integer getAvailableQuantity() {
         return quantity - reservedQuantity;
     }
 
     /**
-     * 在庫が十分にあるかチェック
+     * 检查是否有足够的可用库存
      */
-    public boolean hasEnoughStock(Integer requestedQuantity) {
-        return getAvailableQuantity() >= requestedQuantity;
+    public boolean hasEnoughStock(Integer requestedQty) {
+        return getAvailableQuantity() >= requestedQty;
     }
+
+    /**
+     * ✅ 预扣库存（第一阶段）
+     */
+    public void reserve(Integer qty) {
+        if (!hasEnoughStock(qty)) {
+            throw new IllegalStateException("库存不足: 可用=" + getAvailableQuantity() + ", 需要=" + qty);
+        }
+        this.reservedQuantity += qty;
+    }
+
+    /**
+     * ✅ 确认扣减（第二阶段 - 成功）
+     */
+    public void confirmReserve(Integer qty) {
+        if (this.reservedQuantity < qty) {
+            throw new IllegalStateException("预扣库存不足");
+        }
+        this.quantity -= qty;
+        this.reservedQuantity -= qty;
+    }
+
+    /**
+     * ✅ 取消预扣（第二阶段 - 失败回滚）
+     */
+    public void cancelReserve(Integer qty) {
+        if (this.reservedQuantity < qty) {
+            throw new IllegalStateException("预扣库存不足");
+        }
+        this.reservedQuantity -= qty;
+    }
+
 }

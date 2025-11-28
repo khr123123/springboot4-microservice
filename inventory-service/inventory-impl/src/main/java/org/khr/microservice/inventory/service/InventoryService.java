@@ -12,7 +12,6 @@ import java.util.Optional;
 
 /**
  * 在庫サービス
- * Spring 7の新機能: 改善されたトランザクション処理
  */
 @Service
 @RequiredArgsConstructor
@@ -70,7 +69,61 @@ public class InventoryService {
     }
 
     /**
-     * 在庫が十分にあるかチェック
+     * ✅ 阶段1: 预扣库存（Try）
+     */
+    @Transactional
+    public boolean reserveInventory(Long productId, Integer quantity) {
+        try {
+            Inventory inventory = inventoryRepository.findByProductId(productId)
+                .orElseThrow(() -> new IllegalArgumentException("商品が見つかりません: ProductID=" + productId));
+
+            // 检查并预扣
+            inventory.reserve(quantity);
+            inventoryRepository.save(inventory);
+
+            log.info("库存预扣成功: ProductID={}, Quantity={}, Available={}",
+                productId, quantity, inventory.getAvailableQuantity());
+            return true;
+
+        } catch (Exception e) {
+            log.error("库存预扣失败: ProductID={}, Quantity={}, Error={}",
+                productId, quantity, e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * ✅ 阶段2-成功: 确认扣减（Confirm）
+     */
+    @Transactional
+    public void confirmInventory(Long productId, Integer quantity) {
+        Inventory inventory = inventoryRepository.findByProductId(productId)
+            .orElseThrow(() -> new IllegalArgumentException("商品が見つかりません: ProductID=" + productId));
+
+        inventory.confirmReserve(quantity);
+        inventoryRepository.save(inventory);
+
+        log.info("库存扣减确认: ProductID={}, Quantity={}, Remaining={}",
+            productId, quantity, inventory.getQuantity());
+    }
+
+    /**
+     * ✅ 阶段2-失败: 取消预扣（Cancel）
+     */
+    @Transactional
+    public void cancelInventory(Long productId, Integer quantity) {
+        Inventory inventory = inventoryRepository.findByProductId(productId)
+            .orElseThrow(() -> new IllegalArgumentException("商品が見つかりません: ProductID=" + productId));
+
+        inventory.cancelReserve(quantity);
+        inventoryRepository.save(inventory);
+
+        log.info("库存预扣取消: ProductID={}, Quantity={}, Available={}",
+            productId, quantity, inventory.getAvailableQuantity());
+    }
+
+    /**
+     * 检查可用库存
      */
     @Transactional(readOnly = true)
     public boolean checkInventory(Long productId, Integer quantity) {
@@ -84,33 +137,14 @@ public class InventoryService {
         Inventory inventory = inventoryOpt.get();
         boolean hasStock = inventory.hasEnoughStock(quantity);
 
-        log.info("在庫チェック: ProductID={}, RequestedQty={}, AvailableQty={}, Result={}", productId, quantity,
-            inventory.getAvailableQuantity(), hasStock);
+        log.info("在庫チェック: ProductID={}, RequestedQty={}, AvailableQty={}, Result={}",
+            productId, quantity, inventory.getAvailableQuantity(), hasStock);
 
         return hasStock;
     }
 
     /**
-     * 在庫を減らす
-     */
-    @Transactional
-    public void reduceInventory(Long productId, Integer quantity) {
-        Inventory inventory = inventoryRepository.findByProductId(productId)
-            .orElseThrow(() -> new IllegalArgumentException("商品が見つかりません: ProductID=" + productId));
-
-        if (!inventory.hasEnoughStock(quantity)) {
-            throw new IllegalStateException("在庫が不足しています: ProductID=" + productId);
-        }
-
-        inventory.setQuantity(inventory.getQuantity() - quantity);
-        inventoryRepository.save(inventory);
-
-        log.info("在庫を減らしました: ProductID={}, ReducedQty={}, RemainingQty={}", productId, quantity,
-            inventory.getQuantity());
-    }
-
-    /**
-     * 在庫を増やす
+     * 增加库存（旧方法保留）
      */
     @Transactional
     public void increaseInventory(Long productId, Integer quantity) {
@@ -120,7 +154,8 @@ public class InventoryService {
         inventory.setQuantity(inventory.getQuantity() + quantity);
         inventoryRepository.save(inventory);
 
-        log.info("在庫を増やしました: ProductID={}, IncreasedQty={}, CurrentQty={}", productId, quantity,
-            inventory.getQuantity());
+        log.info("在庫を増やしました: ProductID={}, IncreasedQty={}, CurrentQty={}",
+            productId, quantity, inventory.getQuantity());
     }
+
 }

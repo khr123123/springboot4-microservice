@@ -13,5 +13,6 @@ public interface InventoryService {
     Boolean checkInventory(@PathVariable Long productId, @PathVariable Integer quantity);
 
     @PutExchange("/reduce/{productId}/{quantity}")
-    void reduceInventory(@PathVariable Long productId, @PathVariable Integer quantity);
+    Boolean reserveInventory(@PathVariable Long productId, @PathVariable Integer quantity);
+
 }

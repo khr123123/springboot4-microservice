@@ -34,5 +34,25 @@
             <artifactId>common</artifactId>
             <version>0.0.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.khr.microservice</groupId>
+            <artifactId>order-api</artifactId>
+            <version>0.0.1</version>
+        </dependency>
+        <!-- Redis（用于幂等性） -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <!-- Jackson（JSON 序列化） -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+        </dependency>
+        <!-- Spring Cloud Stream RabbitMQ -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-stream-rabbit</artifactId>
+        </dependency>
     </dependencies>
 </project>
