@@ -15,10 +15,12 @@ public class UserContextInterceptor implements HandlerInterceptor {
 
     private static final Set<String> WHITE_LIST = Set.of(
         "/api/users/login",
-        "/api/users/register"
+        "/api/users/register",
+        "/actuator/health"
     );
 
     @Override
+    @SuppressWarnings("NullableProblems")
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         String path = request.getRequestURI();
         if (WHITE_LIST.contains(path)) {

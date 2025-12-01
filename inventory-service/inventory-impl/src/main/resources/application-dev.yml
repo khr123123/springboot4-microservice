@@ -1,7 +1,7 @@
 spring:
   cloud:
     function:
-      # ✅ 定义函数名称，对应 Consumer Bean 的名称
+      # 定义函数名称，对应 Consumer Bean 的名称
       definition: orderInput
 
     stream:
@@ -10,7 +10,7 @@ spring:
         orderInput-in-0:
           destination: order.events
           content-type: application/json
-          # ✅ 消费者组（确保消息持久化和负载均衡）
+          #  消费者组（确保消息持久化和负载均衡）
           group: inventory-service
 
       rabbit:
@@ -22,10 +22,4 @@ spring:
               # ✅ 每次只拉取 1 条消息
               prefetch: 1
               # ✅ 消费失败后重试配置
-              max-attempts: 3
-              # ✅ 重试间隔（毫秒）
-              initial-interval: 1000
-              # ✅ 重试间隔倍数
-              multiplier: 2.0
-              # ✅ 最大重试间隔
-              max-interval: 10000
+              failed-declaration-retry-interval: 5000

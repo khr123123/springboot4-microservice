@@ -1,12 +1,17 @@
 ### 1. 创建库存
-POST http://localhost:8083/api/inventory
+POST http://localhost:8080/inventorys/api/inventory
 Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEyM30.vFes7rOq9XoEZYfYk53FtAVw2e9jPlO_Onqyaa8AuCA
 
 {
   "productId": 1,
   "productName": "ノートパソコン",
   "quantity": 100
 }
+###
+GET http://localhost:8080/inventorys/config-test
+Content-Type: application/json
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEyM30.vFes7rOq9XoEZYfYk53FtAVw2e9jPlO_Onqyaa8AuCA
 
 ### 2. 注册用户
 POST http://localhost:8080/users/api/users/register

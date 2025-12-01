@@ -14,10 +14,6 @@ spring:
         bindings:
           orderOutput-out-0:
             producer:
-              # ✅ 开启发送确认
-              publisher-confirm-type: correlated
-              # ✅ 开启路由失败回调
-              publisher-returns: true
               # ✅ 消息持久化
               delivery-mode: PERSISTENT
     consul:
@@ -58,10 +54,25 @@ management:
     health:
       show-details: always
 
-logging:
-  level:
-    root: ERROR
-    org.springframework: ERROR
-    org.hibernate: ERROR
-    org.springframework.web: ERROR
-    org.springframework.cloud: ERROR
+#logging:
+#  level:
+#    root: ERROR
+#    org.springframework: ERROR
+#    org.hibernate: ERROR
+#    org.springframework.web: ERROR
+#    org.springframework.cloud: ERROR
+seata:
+  registry:
+    type: consul
+    consul:
+      server-addr: localhost:8500
+      cluster: default
+  config:
+    type: consul
+    consul:
+      key: config/seata/data
+      server-addr: localhost:8500
+  tx-service-group: khr
+  service:
+    vgroup-mapping:
+      khr: default

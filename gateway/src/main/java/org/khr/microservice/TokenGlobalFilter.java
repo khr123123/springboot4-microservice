@@ -31,11 +31,13 @@ public class TokenGlobalFilter implements GlobalFilter, Ordered {
      */
     private static final Set<String> WHITE_LIST = Set.of(
         "/users/api/users/login",
-        "/users/api/users/register"
+        "/users/api/users/register",
+        "/actuator/health"
     );
 
 
     @Override
+    @SuppressWarnings("NullableProblems")
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
 
         String path = exchange.getRequest().getURI().getPath();

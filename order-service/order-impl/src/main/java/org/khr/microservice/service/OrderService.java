@@ -1,8 +1,8 @@
 package org.khr.microservice.service;
 
+import io.seata.spring.annotation.GlobalTransactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.khr.microservice.common.dto.OrderEventDTO;
 import org.khr.microservice.common.context.UserContext;
 import org.khr.microservice.config.RedisLock;
 import org.khr.microservice.inventory.api.InventoryService;
@@ -11,8 +11,6 @@ import org.khr.microservice.repository.OrderRepository;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.List;
 import java.util.Optional;
@@ -48,16 +46,12 @@ public class OrderService {
         return orderRepository.findByUserId(userId);
     }
 
-    @Transactional
+    @GlobalTransactional
     public Order createOrder(Order order) {
         Long userId = Long.valueOf(UserContext.getUser());
-        log.info("新規注文を作成: UserID={}, ProductID={}, Quantity={}",
-            userId, order.getProductId(), order.getQuantity());
         order.setUserId(userId);
-
         String lockKey = "product_lock_" + order.getProductId();
         String lockValue = null;
-
         while (lockValue == null) {
             lockValue = redisLock.tryLock(lockKey, 10);
             if (lockValue == null) {
@@ -69,73 +63,19 @@ public class OrderService {
                 }
             }
         }
-
         try {
-            // ✅ 阶段1: 预扣库存
-            boolean reserved = inventoryService.reserveInventory(
-                order.getProductId(),
-                order.getQuantity()
-            );
-
+            boolean reserved = inventoryService.checkInventory(order.getProductId(), order.getQuantity());
             if (!reserved) {
                 throw new IllegalStateException("在庫が不足しています（预扣失败）");
             }
-
-            order.setStatus(Order.OrderStatus.PENDING);
-
+            inventoryService.reduceInventory(order.getProductId(), order.getQuantity());
+           String a = null;
+           a.toLowerCase();
             // 保存订单
+            order.setStatus(Order.OrderStatus.PENDING);
             Order savedOrder = orderRepository.save(order);
             log.info("订单保存成功: OrderID={}", savedOrder.getId());
-
-            // ✅ 注册事务同步 - 成功后发送确认消息
-            TransactionSynchronizationManager.registerSynchronization(
-                new TransactionSynchronization() {
-
-                    @Override
-                    public void afterCommit() {
-                        try {
-                            log.info("订单事务提交成功，发送确认消息: OrderID={}", savedOrder.getId());
-
-                            // 发送确认消息
-                            OrderEventDTO event = new OrderEventDTO();
-                            event.setOrderId(savedOrder.getId());
-                            event.setProductId(savedOrder.getProductId());
-                            event.setQuantity(savedOrder.getQuantity());
-                            event.setEventType("ORDER_CONFIRMED");  // ✅ 确认事件
-
-                            streamBridge.send("orderOutput-out-0", event);
-                        } catch (Exception e) {
-                            log.error("确认消息发送失败: OrderID={}", savedOrder.getId(), e);
-                            // TODO: 记录到补偿表，定时重试
-                        }
-                    }
-
-                    @Override
-                    public void afterCompletion(int status) {
-                        if (status == STATUS_ROLLED_BACK) {
-                            log.warn("订单事务回滚，发送取消消息: OrderID={}", savedOrder.getId());
-
-                            try {
-                                // ✅ 发送取消消息
-                                OrderEventDTO event = new OrderEventDTO();
-                                event.setOrderId(savedOrder.getId());
-                                event.setProductId(savedOrder.getProductId());
-                                event.setQuantity(savedOrder.getQuantity());
-                                event.setEventType("ORDER_CANCELLED");  // ✅ 取消事件
-
-                                streamBridge.send("orderOutput-out-0", event);
-
-                            } catch (Exception e) {
-                                log.error("取消消息发送失败，需手动回滚库存: OrderID={}", savedOrder.getId(), e);
-                                // TODO: 记录到补偿表
-                            }
-                        }
-                    }
-                }
-            );
-
             return savedOrder;
-
         } catch (Exception e) {
             // 预扣失败或其他异常，事务会自动回滚
             log.error("订单创建失败: {}", e.getMessage(), e);

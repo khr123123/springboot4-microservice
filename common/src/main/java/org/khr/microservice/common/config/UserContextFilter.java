@@ -14,7 +14,8 @@ public class UserContextFilter implements Filter {
 
     private static final Set<String> WHITE_LIST = Set.of(
         "/api/users/login",
-        "/api/users/register"
+        "/api/users/register",
+        "/actuator/health"
     );
 
     @Override
