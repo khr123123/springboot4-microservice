@@ -10,7 +10,7 @@ spring:
         format: yaml
         profile-separator: '-'
         # 是否启用配置中心,默认值 true 开启
-        enabled: true
+        enabled: false
         # 设置配置的基本文件夹,默认值config 可以理解为配置文件所在的最外层文件夹
         # 设置应用的文件夹名称,默认值application 一般建议设置为微服务应用名称
         default-context: application

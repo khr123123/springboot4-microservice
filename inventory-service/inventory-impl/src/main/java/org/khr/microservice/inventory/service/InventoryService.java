@@ -1,5 +1,6 @@
 package org.khr.microservice.inventory.service;
 
+import io.seata.core.context.RootContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.khr.microservice.inventory.model.Inventory;
@@ -99,7 +100,10 @@ public class InventoryService {
             productId, quantity, inventory.getQuantity());
     }
 
+    @Transactional
     public boolean reduceInventory(Long productId, Integer quantity) {
+        log.info("✅ 当前全局事务 XID = {}", RootContext.getXID());
+
         Inventory inventory = inventoryRepository.findByProductId(productId)
             .orElseThrow(() -> new IllegalArgumentException("商品が見つかりません: ProductID=" + productId));
         if (inventory.getQuantity() < quantity) {
@@ -112,6 +116,9 @@ public class InventoryService {
         inventoryRepository.save(inventory);
         log.info("库存扣减成功: ProductID={}, Quantity={}, 剩余库存={}",
             productId, quantity, inventory.getQuantity());
+
+//        String a = null;
+//        a.toLowerCase();
         return true;
     }
 

@@ -58,6 +58,7 @@ Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEyM30.v
 
 ### 4. 查询所有订单
 GET http://localhost:8082/api/orders
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEyM30.vFes7rOq9XoEZYfYk53FtAVw2e9jPlO_Onqyaa8AuCA
 Authorization: Bearer FUCK U
 
 ### 5. 查询库存

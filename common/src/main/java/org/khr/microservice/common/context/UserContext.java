@@ -1,21 +1,18 @@
 package org.khr.microservice.common.context;
 
-/**
- * @author KK
- * @create 2025-11-26-14:53
- */
 public class UserContext {
 
-    // 用户上下文（不可变，更安全）
-    private static final ScopedValue<String> USER = ScopedValue.newInstance();
+    private static final ThreadLocal<String> USER = new ThreadLocal<>();
 
-    // 设置上下文（必须使用 runWhere 包裹作用域）
-    public static void run(String userId, Runnable runnable) {
-        ScopedValue.where(USER, userId).run(runnable);
+    public static void setUser(String user) {
+        USER.set(user);
     }
 
-    // 读取上下文
     public static String getUser() {
-        return USER.get();
+        return USER.get(); // 不会再抛异常，只可能是 null
+    }
+
+    public static void clear() {
+        USER.remove(); // 防止内存泄漏（非常重要）
     }
 }

@@ -27,29 +27,31 @@ public class UserContextFilter implements Filter {
 
         String path = request.getRequestURI();
 
-        // ① 白名单直接放行
+        // ✅ ① 白名单直接放行
         if (WHITE_LIST.contains(path)) {
             chain.doFilter(req, res);
             return;
         }
 
-        // ② 校验 Header
-        String token = request.getHeader("X-UserId");
+        // ✅ ② 读取 Header
+        String userId = request.getHeader("X-UserId");
 
-        if (token == null || token.isEmpty()) {
+        if (userId == null || userId.isEmpty()) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // 401
             response.setContentType("application/json;charset=UTF-8");
             response.getWriter().write("{\"code\":401,\"message\":\"Missing X-UserId header\"}");
             return;
         }
 
-        // ③ 执行业务逻辑（进入 ScopedValue）
-        UserContext.run(token, () -> {
-            try {
-                chain.doFilter(req, res);
-            } catch (IOException | ServletException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        try {
+            // ✅ ③ 放入 ThreadLocal
+            UserContext.setUser(userId);
+
+            // ✅ ④ 正常放行请求
+            chain.doFilter(req, res);
+        } finally {
+            // ✅ ⑤ 必须清理，防止线程复用串数据（超级重要）
+            UserContext.clear();
+        }
     }
 }

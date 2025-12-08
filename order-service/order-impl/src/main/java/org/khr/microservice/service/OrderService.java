@@ -69,8 +69,6 @@ public class OrderService {
                 throw new IllegalStateException("在庫が不足しています（预扣失败）");
             }
             inventoryService.reduceInventory(order.getProductId(), order.getQuantity());
-           String a = null;
-           a.toLowerCase();
             // 保存订单
             order.setStatus(Order.OrderStatus.PENDING);
             Order savedOrder = orderRepository.save(order);

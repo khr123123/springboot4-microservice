@@ -62,17 +62,10 @@ management:
 #    org.springframework.web: ERROR
 #    org.springframework.cloud: ERROR
 seata:
-  registry:
-    type: consul
-    consul:
-      server-addr: localhost:8500
-      cluster: default
-  config:
-    type: consul
-    consul:
-      key: config/seata/data
-      server-addr: localhost:8500
-  tx-service-group: khr
+  enabled: true
+  tx-service-group: default_tx_group
   service:
     vgroup-mapping:
-      khr: default
+      default_tx_group: default
+    grouplist:
+      default: 127.0.0.1:8091
