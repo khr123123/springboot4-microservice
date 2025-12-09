@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
+    <!-- 子模块继承 user-service 的 POM -->
     <parent>
         <groupId>org.khr.microservice</groupId>
         <artifactId>user-service</artifactId>
@@ -13,24 +17,33 @@
     <name>user-impl</name>
 
     <properties>
+        <!-- 子模块的 JDK 版本声明 -->
         <java.version>25</java.version>
     </properties>
+
     <dependencies>
+
+        <!-- 调用 API 层（DTO、Feign 接口等） -->
         <dependency>
             <groupId>org.khr.microservice</groupId>
             <artifactId>user-api</artifactId>
             <version>0.0.1</version>
         </dependency>
+
+        <!-- 使用 Consul 做服务发现 -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-consul-discovery</artifactId>
         </dependency>
+
+        <!-- MySQL 驱动 -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.33</version>
+            <version>${mysql.version}</version>
             <scope>runtime</scope>
         </dependency>
+
     </dependencies>
 
 </project>

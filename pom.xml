@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
+    <!-- Spring Boot 父工程，使用 SNAPSHOT -->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>4.0.1-SNAPSHOT</version>
-        <relativePath/> <!-- lookup parent from repository -->
+        <relativePath/>
     </parent>
 
     <groupId>org.khr.microservice</groupId>
@@ -16,13 +20,26 @@
     <packaging>pom</packaging>
 
     <properties>
+        <!-- 统一管理 JDK 版本 -->
         <java.version>25</java.version>
         <maven.compiler.source>25</maven.compiler.source>
         <maven.compiler.target>25</maven.compiler.target>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- 工具包版本 -->
         <hutool.version>5.8.40</hutool.version>
+
+        <!-- Spring Cloud 版本 -->
         <spring-cloud.version>2025.1.0</spring-cloud.version>
+
+        <!-- MySQL 驱动版本 -->
+        <mysql.version>8.0.33</mysql.version>
+
+        <seata.version>2.0.0</seata.version>
     </properties>
+
+    <!-- 多模块管理 -->
     <modules>
         <module>user-service</module>
         <module>order-service</module>
@@ -30,8 +47,12 @@
         <module>common</module>
         <module>gateway</module>
     </modules>
+
+    <!-- 统一依赖版本管理，不直接引入 -->
     <dependencyManagement>
         <dependencies>
+
+            <!-- Spring Cloud BOM（用于统一版本） -->
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
@@ -39,20 +60,26 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-                <dependency>
-                    <groupId>org.antlr</groupId>
-                    <artifactId>antlr4-runtime</artifactId>
-                    <version>4.13.1</version>
-                </dependency>
+
+            <!-- ANTLR 版本锁定 -->
+            <dependency>
+                <groupId>org.antlr</groupId>
+                <artifactId>antlr4-runtime</artifactId>
+                <version>4.13.1</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
     <build>
         <plugins>
+
+            <!-- Java 编译插件 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
+                    <!-- Lombok 作为注解处理器 -->
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
@@ -61,10 +88,13 @@
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
+
+            <!-- Spring Boot 打包插件 -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <!-- 排除 Lombok，避免打包进入可执行 jar -->
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>
@@ -73,8 +103,11 @@
                     </excludes>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
+
+    <!-- 由于父工程使用 SNAPSHOT，需要 snapshot 仓库 -->
     <repositories>
         <repository>
             <id>spring-snapshots</id>

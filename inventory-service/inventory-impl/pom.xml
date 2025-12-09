@@ -1,6 +1,9 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
     <parent>
         <groupId>org.khr.microservice</groupId>
         <artifactId>inventory-service</artifactId>
@@ -14,58 +17,70 @@
     </properties>
 
     <dependencies>
+        <!-- 库存 API -->
         <dependency>
             <groupId>org.khr.microservice</groupId>
             <artifactId>inventory-api</artifactId>
             <version>0.0.1</version>
         </dependency>
+
+        <!-- Consul 服务发现 -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-consul-discovery</artifactId>
         </dependency>
+
+        <!-- MySQL 驱动 -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.33</version>
+            <version>${mysql.version}</version>
             <scope>runtime</scope>
         </dependency>
-        <dependency>
-            <groupId>org.khr.microservice</groupId>
-            <artifactId>common</artifactId>
-            <version>0.0.1</version>
-        </dependency>
+
+        <!-- 订单 API -->
         <dependency>
             <groupId>org.khr.microservice</groupId>
             <artifactId>order-api</artifactId>
             <version>0.0.1</version>
         </dependency>
+
         <!-- Redis（用于幂等性） -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
-        <!-- Jackson（JSON 序列化） -->
+
+        <!-- Jackson（JSON） -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
         </dependency>
+
         <!-- Spring Cloud Stream RabbitMQ -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-stream-rabbit</artifactId>
         </dependency>
+
+        <!-- Seata 事务协调器 -->
         <dependency>
             <groupId>io.seata</groupId>
             <artifactId>seata-spring-boot-starter</artifactId>
-            <version>2.0.0</version>
+            <version>${seata.version}</version>
         </dependency>
+
+        <!-- Spring Cloud Bootstrap -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-bootstrap</artifactId>
         </dependency>
+
+        <!-- Consul 配置中心 -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-consul-config</artifactId>
         </dependency>
     </dependencies>
+
 </project>

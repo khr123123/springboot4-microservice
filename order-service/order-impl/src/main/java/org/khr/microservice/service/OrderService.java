@@ -4,16 +4,18 @@ import io.seata.spring.annotation.GlobalTransactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.khr.microservice.common.context.UserContext;
-import org.khr.microservice.config.RedisLock;
 import org.khr.microservice.inventory.api.InventoryService;
 import org.khr.microservice.model.Order;
 import org.khr.microservice.repository.OrderRepository;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 注文サービス
@@ -25,8 +27,8 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final InventoryService inventoryService;
-    private final RedisLock redisLock;
     private final StreamBridge streamBridge;
+    private final RedissonClient redisson;
 
     @Transactional(readOnly = true)
     public List<Order> getAllOrders() {
@@ -51,19 +53,12 @@ public class OrderService {
         Long userId = Long.valueOf(UserContext.getUser());
         order.setUserId(userId);
         String lockKey = "product_lock_" + order.getProductId();
-        String lockValue = null;
-        while (lockValue == null) {
-            lockValue = redisLock.tryLock(lockKey, 10);
-            if (lockValue == null) {
-                try {
-                    Thread.sleep(90);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                    throw new RuntimeException("线程被中断", e);
-                }
-            }
-        }
+        // 获取锁对象
+        RLock lock = redisson.getLock(lockKey);
         try {
+            if (!lock.tryLock(1, 30, TimeUnit.SECONDS)) {
+                throw new IllegalStateException("系统繁忙，请稍后再试");
+            }
             boolean reserved = inventoryService.checkInventory(order.getProductId(), order.getQuantity());
             if (!reserved) {
                 throw new IllegalStateException("在庫が不足しています（预扣失败）");
@@ -74,13 +69,17 @@ public class OrderService {
             Order savedOrder = orderRepository.save(order);
             log.info("订单保存成功: OrderID={}", savedOrder.getId());
             return savedOrder;
+        } catch (InterruptedException e) {
+            throw new RuntimeException("订单创建失败:" + e.getMessage());
         } catch (Exception e) {
             // 预扣失败或其他异常，事务会自动回滚
             log.error("订单创建失败: {}", e.getMessage(), e);
+            Thread.currentThread().interrupt();
             throw e;
-
         } finally {
-            redisLock.unlock(lockKey, lockValue);
+            if (lock.isLocked() && lock.isHeldByCurrentThread()) {
+                lock.unlock();
+            }
         }
     }
 

@@ -1,6 +1,10 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
+    <!-- 继承 order-service（父模块） -->
     <parent>
         <groupId>org.khr.microservice</groupId>
         <artifactId>order-service</artifactId>
@@ -9,58 +13,78 @@
 
     <artifactId>order-impl</artifactId>
 
+    <!-- 统一版本管理 -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <dependencies>
+
+        <!-- Order API（DTO、Feign 等） -->
         <dependency>
             <groupId>org.khr.microservice</groupId>
             <artifactId>order-api</artifactId>
             <version>0.0.1</version>
         </dependency>
+
+        <!-- Inventory API（库存调用接口） -->
         <dependency>
             <groupId>org.khr.microservice</groupId>
             <artifactId>inventory-api</artifactId>
             <version>0.0.1</version>
         </dependency>
+
+        <!-- Consul 服务注册与发现 -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-consul-discovery</artifactId>
         </dependency>
+
+        <!-- Consul 配置中心（加载 bootstrap.yml） -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-consul-config</artifactId>
         </dependency>
+
+        <!-- MySQL 驱动 -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.33</version>
+            <version>${mysql.version}</version>
             <scope>runtime</scope>
         </dependency>
-        <dependency>
-            <groupId>org.khr.microservice</groupId>
-            <artifactId>common</artifactId>
-            <version>0.0.1</version>
-        </dependency>
-        <!-- Spring Data Redis -->
+
+        <!-- Redis 缓存 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson</artifactId>
+            <version>3.52.0</version>
+        </dependency>
+
+        <!-- RabbitMQ Stream（订单消息） -->
+        <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-stream-rabbit</artifactId>
         </dependency>
+
+        <!-- 分布式事务 Seata -->
         <dependency>
             <groupId>io.seata</groupId>
             <artifactId>seata-spring-boot-starter</artifactId>
-            <version>2.0.0</version>
+            <version>${seata.version}</version>
         </dependency>
+
+        <!-- 允许 bootstrap.yml 生效（Consul Config 必备） -->
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-bootstrap</artifactId>
         </dependency>
+
+        <!-- Jackson JSON 核心组件 -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -75,5 +99,7 @@
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
         </dependency>
+
     </dependencies>
+
 </project>
